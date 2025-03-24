@@ -35,3 +35,23 @@ Thumbs.db
 # OS-specific files
 *.swp
 *.swo
+
+# Firebase functions directory node_modules
+/functions/node_modules
+
+# Firebase functions build artifacts (for TypeScript users)
+functions/lib
+
+# Firebase project-specific files
+.firebase/
+
+# Firebase logs
+firebase-debug.log
+firebase-debug.*.log
+
+# Google Cloud service account keys (if you use them in your project)
+service-account.json
+
+
+
+
