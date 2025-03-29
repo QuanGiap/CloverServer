@@ -1,24 +1,35 @@
-import { db } from "../FireBase/FireBase"
-// example data
-// {
-//     user_id:'2901840912',
-//     code_name: "Space Needle",
-//     date: new Date("1995-12-17T03:24:00"),
-//     point: 728,
-//     task: 10,
-//     max_task: 10,
-//     time: "07:48",
-//   },
+const {db} = require("../FireBase/FireBase");
 
-async function addDataHistory({ user_id="", code_name, date, point, task, max_task, time }) {
+/**
+ * Adds a new game history record to the database.
+ * @param {Object} data - The game history data.
+ * @param {string} data.userId - The user ID.
+ * @param {string} data.codeName - The code name.
+ * @param {Date} data.date - The date of the game.
+ * @param {number} data.point - The points scored.
+ * @param {number} data.task - The number of tasks completed.
+ * @param {number} data.maxTask - The maximum number of tasks.
+ * @param {string} data.time - The time taken.
+ * @return {Promise<string>} The ID of the added document.
+ * @throws Will throw an error if the document cannot be added.
+ */
+async function addDataHistory({
+  userId = "",
+  codeName,
+  date,
+  point,
+  task,
+  maxTask,
+  time,
+}) {
   try {
     const docRef = await db.collection("game_history").add({
-      user_id,
-      code_name,
+      user_id: userId,
+      code_name: codeName,
       date,
       point,
       task,
-      max_task,
+      max_task: maxTask,
       time,
     });
     return docRef.id;
@@ -28,10 +39,18 @@ async function addDataHistory({ user_id="", code_name, date, point, task, max_ta
   }
 }
 
-async function updateDataHistory({ id, user_id }) {
+/**
+ * Updates an existing game history record in the database.
+ * @param {Object} data - The update data.
+ * @param {string} data.id - The document ID.
+ * @param {string} data.userId - The user ID.
+ * @return {Promise<string>} The ID of the updated document.
+ * @throws Will throw an error if the document cannot be updated.
+ */
+async function updateDataHistory({id, userId}) {
   try {
     const docRef = db.collection("game_history").doc(id);
-    await docRef.update({ user_id });
+    await docRef.update({user_id: userId});
     return id;
   } catch (error) {
     console.error("Error updating document: ", error);

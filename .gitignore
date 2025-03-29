@@ -27,7 +27,7 @@ tmp/
 out/
 
 # Editor/IDE files
-.vscode/
+# .vscode/
 .idea/
 .DS_Store
 Thumbs.db
