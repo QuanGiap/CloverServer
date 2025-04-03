@@ -12,9 +12,9 @@ async function getUserByEmail(email) {
     const userData = await db.collection("user").doc(user.uid).get();
     return userData;
   } catch (err) {
-    console.log(err);
+    console.error(err); // Use console.error for error logging
+    return null; // Ensure consistent return type
   }
-  return null;
 }
 
 /**
@@ -32,4 +32,5 @@ async function createUser(userEmail) {
   });
   return userData;
 }
+
 module.exports = { getUserByEmail, createUser };
