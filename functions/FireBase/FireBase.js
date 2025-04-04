@@ -2,12 +2,13 @@ const {initializeApp} = require("firebase-admin/app");
 const {getAuth} = require("firebase-admin/auth");
 const {getFirestore} = require("firebase-admin/firestore");
 const {getStorage} = require("firebase-admin/storage");
+const admin = require("firebase-admin");
 const uploadFolder = require("../testData/Storage");
 
 // Initialize Firebase Admin SDK with credentials (only for real deployment)
 const app = initializeApp();
 
-const db = getFirestore();
+const db =  getFirestore();
 const storage = getStorage();
 const auth = getAuth();
 
@@ -32,7 +33,7 @@ if (process.env.FIREBASE_AUTH_EMULATOR_HOST) {
           email: user.email,
         }))
         await Promise.all(promises);
-        console.log('user added');
+        console.log('users added');
     } 
   }
   checkIfNoUsers();
@@ -43,5 +44,4 @@ if (process.env.FIREBASE_STORAGE_EMULATOR_HOST) {
   uploadFolder('./testData/flag','flag',bucket).then(()=>console.log('Uploaded flags'));
   uploadFolder('./testData/stampIcon','stamp',bucket).then(()=>console.log('Uploaded stamps'));
 }
-
-module.exports = {db, storage, app, auth};
+module.exports = {db, storage, app, auth,admin};

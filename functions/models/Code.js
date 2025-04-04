@@ -10,18 +10,15 @@ const {db} = require("../FireBase/FireBase");
 async function getGameHistoryIdByCode(code) {
   const codeCollection = db.collection("code");
   try {
-    const snapshot = await codeCollection
-        .where("code", "==", code)
-        .limit(1)
-        .get();
-    if (snapshot.empty) {
+    const snapshot = await codeCollection.doc(code).get();
+    if (snapshot.exists) {
       console.log("No matching documents found.");
       return null;
     }
-    const doc = snapshot.docs[0];
+    const doc = snapshot.data();
     return {
-      codeId: doc.id,
-      gameHistoryId: doc.data().game_history_id || null,
+      codeId: code,
+      gameHistoryId: doc.game_history_id,
     };
   } catch (error) {
     console.error("Error fetching game history ID:", error);
@@ -41,22 +38,19 @@ async function createCodeAndGameHistory(code, gameHistoryId) {
   const codeCollection = db.collection("code");
   try {
     // Check for duplicate code
-    const snapshot = await codeCollection
-        .where("code", "==", code)
-        .limit(1)
-        .get();
-    if (!snapshot.empty) {
+    const snapshot = await codeCollection.doc(code).get();
+    if (snapshot.exists) {
       console.log("Duplicate code exists.");
       return null;
     }
 
     // Add new document
-    const newDocRef = await codeCollection.add({
+    await codeCollection.doc(code).set({
       code,
       game_history_id: gameHistoryId,
     });
 
-    return {codeId: newDocRef.id, gameHistoryId};
+    return {code: code, gameHistoryId};
   } catch (error) {
     console.error("Error creating code and game history:", error);
     throw error;
@@ -65,18 +59,18 @@ async function createCodeAndGameHistory(code, gameHistoryId) {
 
 /**
  * Deletes a code document by its ID.
- * @param {string} codeId - The ID of the code document to delete.
+ * @param {string} code - The ID of the code document to delete.
  * @return {Promise<boolean>} - Returns true if the deletion was successful,
  * false otherwise.
  */
-async function deleteCode(codeId) {
+async function deleteCode(code) {
   const codeCollection = db.collection("code");
   try {
-    await codeCollection.doc(codeId).delete();
-    console.log(`Code with ID ${codeId} deleted successfully.`);
+    await codeCollection.doc(code).delete();
+    console.log(`Code deleted successfully.`);
     return true;
   } catch (error) {
-    console.error(`Error deleting code with ID ${codeId}:`, error);
+    console.error(`Error deleting code with ID ${code}:`, error);
     return false;
   }
 }

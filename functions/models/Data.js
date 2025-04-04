@@ -1,14 +1,11 @@
-const {db} = require("../FireBase/FireBase");
+const {db, admin} = require("../FireBase/FireBase");
 
 /**
  * Adds a new game history record to the database.
  * @param {Object} data - The game history data.
  * @param {string} data.userId - The user ID.
  * @param {string} data.codeName - The code name.
- * @param {Date} data.date - The date of the game.
- * @param {number} data.point - The points scored.
- * @param {number} data.task - The number of tasks completed.
- * @param {number} data.maxTask - The maximum number of tasks.
+ * @param {number} data.points - The points scored.
  * @param {string} data.time - The time taken.
  * @return {Promise<string>} The ID of the added document.
  * @throws Will throw an error if the document cannot be added.
@@ -16,20 +13,15 @@ const {db} = require("../FireBase/FireBase");
 async function addDataHistory({
   userId = "",
   codeName,
-  date,
-  point,
-  task,
-  maxTask,
+  points,
   time,
 }) {
   try {
     const docRef = await db.collection("game_history").add({
       user_id: userId,
       code_name: codeName,
-      date,
-      point,
-      task,
-      max_task: maxTask,
+      date:admin.firestore.Timestamp.now(),
+      points,
       time,
     });
     return docRef.id;
