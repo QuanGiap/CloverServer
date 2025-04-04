@@ -14,34 +14,22 @@ const auth = getAuth();
 
 // add test places data to firestore if running locally
 if (process.env.FIRESTORE_EMULATOR_HOST) {
-  console.log("Using Firestore Emulator, adding places data");
-  const {places} = require('../testData/FireStore');
-  const batch = db.batch();
-  places.forEach(place=>{
-    const docRef = db.collection('places').doc(place.codeName);
-    batch.set(docRef,place);
-  })
-  batch.commit().then(()=>console.log('Finished adding places data'),(err)=>console.log(err));
+  console.log("Using Firestore Emulator, adding places data and stamps");
+  const {addTestPlacesData} = require('../testData/FireStore');
+  addTestPlacesData(db).then(() => console.log('Finished adding places data'), (err) => console.log(err));
 }
+
 if (process.env.FIREBASE_AUTH_EMULATOR_HOST) {
   console.log("Using Auth Emulator, adding user data");
-  const {users} = require('../testData/Auth');
-  async function checkIfNoUsers() {
-    const listUsersResult = await auth.listUsers(1); // Retrieve 1 user
-    if (listUsersResult.users.length === 0) {
-        const promises = users.map((user)=>auth.createUser({
-          email: user.email,
-        }))
-        await Promise.all(promises);
-        console.log('users added');
-    } 
-  }
-  checkIfNoUsers();
+  const {addTestUsers} = require('../testData/Auth');
+  addTestUsers(auth).then(() => console.log('Users added'), (err) => console.log(err));
 }
+
 if (process.env.FIREBASE_STORAGE_EMULATOR_HOST) {
   console.log("Using Storage Emulator, adding files");
   const bucket = storage.bucket();
-  uploadFolder('./testData/flag','flag',bucket).then(()=>console.log('Uploaded flags'));
-  uploadFolder('./testData/stampIcon','stamp',bucket).then(()=>console.log('Uploaded stamps'));
+  uploadFolder('./testData/flag', 'flag', bucket).then(() => console.log('Uploaded flags'));
+  uploadFolder('./testData/stampIcon', 'stamp', bucket).then(() => console.log('Uploaded stamps'));
 }
+
 module.exports = {db, storage, app, auth,admin};

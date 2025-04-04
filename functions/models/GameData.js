@@ -10,7 +10,7 @@ const {db, admin} = require("../FireBase/FireBase");
  * @return {Promise<string>} The ID of the added document.
  * @throws Will throw an error if the document cannot be added.
  */
-async function addDataHistory({
+async function addGameDataHistory({
   userId = "",
   codeName,
   points,
@@ -39,7 +39,7 @@ async function addDataHistory({
  * @return {Promise<string>} The ID of the updated document.
  * @throws Will throw an error if the document cannot be updated.
  */
-async function updateDataHistory({id, userId}) {
+async function updateGameDataHistory({id, userId}) {
   try {
     const docRef = db.collection("game_history").doc(id);
     await docRef.update({user_id: userId});
@@ -50,7 +50,28 @@ async function updateDataHistory({id, userId}) {
   }
 }
 
+
+async function getGameDataHistoryByUserid(userId){
+  try {
+    const gameHistoryCollection = db.collection("game_history");
+    const snapshot = await gameHistoryCollection.where("user_id", "==", userId).get();
+    if (snapshot.empty) {
+      console.log("No matching documents found.");
+      return [];
+    }
+    const gameHistory = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+    return gameHistory;
+  } catch (error) {
+    console.error("Error updating document: ", error);
+    throw error;
+  }
+}
+
 module.exports = {
-  addDataHistory,
-  updateDataHistory,
+  addGameDataHistory,
+  updateGameDataHistory,
+  getGameDataHistoryByUserid
 };

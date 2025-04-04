@@ -10,10 +10,12 @@ async function getUserByEmail(email) {
   try {
     const user = await auth.getUserByEmail(email);
     const userData = await db.collection("user").doc(user.uid).get();
-    return userData;
+    return userData.data();
   } catch (err) {
-    console.error(err); // Use console.error for error logging
-    return null; // Ensure consistent return type
+    if(err.code === 'auth/user-not-found'){
+      return null;
+    }
+    console.error('Error fetching user:', err);
   }
 }
 
