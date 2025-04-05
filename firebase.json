@@ -13,7 +13,7 @@
         "firebase-debug.log",
         "firebase-debug.*.log",
         "*.local",
-        "testData/**"
+        "fake-data/**"
       ],
       "predeploy": [
         "npm --prefix \"$RESOURCE_DIR\" run lint"

@@ -1,10 +1,33 @@
 const {db, admin} = require("../FireBase/FireBase");
 
+
+/**
+ * Fetches the ID of the game_history collection by comparing the code parameter
+ * with entries in the code collection from Firebase.
+ * @param {number} code - The code to compare.
+ * @return {Promise<{codeId: string, gameHistoryId: string}>} - The ID of
+ *          the matching game_history document, or null if not found.
+ */
+async function getGameHistoryByCode(code) {
+  const codeCollection = db.collection("code");
+  try {
+    const snapshot = await codeCollection.doc(code).get();
+    if (snapshot.exists) {
+      console.log("No matching documents found.");
+      return null;
+    }
+    const doc = snapshot.data();
+    return await getGameDataHistoryById(doc.game_history_id);
+  } catch (error) {
+    console.error("Error fetching game history ID:", error);
+    throw error;
+  }
+}
 /**
  * Adds a new game history record to the database.
  * @param {Object} data - The game history data.
  * @param {string} data.userId - The user ID.
- * @param {string} data.codeName - The code name.
+ * @param {string} data.codePlaceName - The code name.
  * @param {number} data.points - The points scored.
  * @param {string} data.time - The time taken.
  * @return {Promise<string>} The ID of the added document.
@@ -12,23 +35,18 @@ const {db, admin} = require("../FireBase/FireBase");
  */
 async function addGameDataHistory({
   userId = "",
-  codeName,
+  codePlaceName,
   points,
   time,
 }) {
-  try {
     const docRef = await db.collection("game_history").add({
       user_id: userId,
-      code_name: codeName,
+      code_place_name: codePlaceName,
       date:admin.firestore.Timestamp.now(),
       points,
       time,
     });
     return docRef.id;
-  } catch (error) {
-    console.error("Error adding document: ", error);
-    throw error;
-  }
 }
 
 /**
@@ -70,8 +88,26 @@ async function getGameDataHistoryByUserid(userId){
   }
 }
 
+async function getGameDataHistoryById(id){
+  const gameHistoryDoc = await db.collection("game_history").doc(id).get();
+  if(!gameHistoryDoc.exists) {
+    console.log("No matching documents found.");
+    return null;
+  }
+  const {code_place_name,date,points,time} = gameHistoryDoc.data();
+  return {
+    id: gameHistoryDoc.id,
+    codePlaceName: code_place_name,
+    date:date,
+    points,
+    time,
+  };
+}
+
 module.exports = {
   addGameDataHistory,
   updateGameDataHistory,
-  getGameDataHistoryByUserid
+  getGameDataHistoryByUserid,
+  getGameDataHistoryById,
+  getGameHistoryByCode
 };

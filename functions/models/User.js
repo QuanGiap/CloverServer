@@ -1,4 +1,4 @@
-const { auth, db } = require("../FireBase/FireBase");
+const { auth, db, admin } = require("../FireBase/FireBase");
 // async function getPlayHistory(req, user_id) {}
 
 /**
@@ -10,13 +10,33 @@ async function getUserByEmail(email) {
   try {
     const user = await auth.getUserByEmail(email);
     const userData = await db.collection("user").doc(user.uid).get();
-    return userData.data();
+    return {id:user.uid, ...userData.data()}
   } catch (err) {
     if(err.code === 'auth/user-not-found'){
       return null;
     }
-    console.error('Error fetching user:', err);
+    else {
+      console.error("Error fetching user:", err);
+      throw new Error("Internal server error");
+    }
   }
+}
+
+
+/**
+ * add stamp to user
+ * @param {string} userId
+ * @param {string} stamp
+ * @return {Promise} userData
+ */
+async function addStampToUser(userId, stamp) {
+  const res = await db
+    .collection("user")
+    .doc(userId)
+    .update({
+      stamps: admin.firestore.FieldValue.arrayUnion(stamp),
+    });
+    return res;
 }
 
 /**
@@ -28,11 +48,15 @@ async function createUser(userEmail) {
   const user = await auth.createUser({
     email: userEmail,
   });
-  const userData = await db.collection("user").doc(user.uid).set({
+  await db.collection("user").doc(user.uid).set({
     stamps: [],
     email: userEmail,
   });
-  return userData;
+  return {
+    id:user.uid,
+    stamps:[],
+    email: userEmail,
+  };
 }
 
-module.exports = { getUserByEmail, createUser };
+module.exports = { getUserByEmail, createUser,addStampToUser };

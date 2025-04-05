@@ -1,27 +1,21 @@
 const {db} = require("../FireBase/FireBase");
 
 /**
- * Fetches the ID of the game_history collection by comparing the code parameter
- * with entries in the code collection from Firebase.
- * @param {number} code - The code to compare.
- * @return {Promise<{codeId: string, gameHistoryId: string}>} - The ID of
- *          the matching game_history document, or null if not found.
+ * Checks if a code already exists in the database.
+ * @param {number} code - The code to check.
+ * @return {Promise<boolean>} - Returns true if the code exists, false otherwise.
  */
-async function getGameHistoryIdByCode(code) {
+async function checkCodeDublicate(code) {
   const codeCollection = db.collection("code");
   try {
     const snapshot = await codeCollection.doc(code).get();
     if (snapshot.exists) {
-      console.log("No matching documents found.");
-      return null;
+      console.log("Duplicate code exists.");
+      return true;
     }
-    const doc = snapshot.data();
-    return {
-      codeId: code,
-      gameHistoryId: doc.game_history_id,
-    };
+    return false;
   } catch (error) {
-    console.error("Error fetching game history ID:", error);
+    console.error("Error checking duplicate code:", error);
     throw error;
   }
 }
@@ -34,16 +28,9 @@ async function getGameHistoryIdByCode(code) {
  * @return {Promise<{codeId: string, gameHistoryId: string}|null>} - The created
  * IDs or null if duplicate exists.
  */
-async function createCodeAndGameHistory(code, gameHistoryId) {
+async function createCode(code, gameHistoryId) {
   const codeCollection = db.collection("code");
   try {
-    // Check for duplicate code
-    const snapshot = await codeCollection.doc(code).get();
-    if (snapshot.exists) {
-      console.log("Duplicate code exists.");
-      return null;
-    }
-
     // Add new document
     await codeCollection.doc(code).set({
       code,
@@ -77,7 +64,7 @@ async function deleteCode(code) {
 
 // Export the function for use in other parts of the application
 module.exports = {
-  getGameHistoryIdByCode,
-  createCodeAndGameHistory,
+  createCode,
   deleteCode,
+  checkCodeDublicate
 };
