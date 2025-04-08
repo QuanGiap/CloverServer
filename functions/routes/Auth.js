@@ -16,7 +16,7 @@ authRouter.post("/login", async (req, res) => {
     if (!userData) {
       return res.status(404).send("User not found");
     }
-    const gameHistory = await getGameDataHistoryByUserid(user.uid);
+    const gameHistory = await getGameDataHistoryByUserid(userData.id);
     const placesData = await getPlaces();
     const stamps = userData.stamps;
     const userSetStamps = new Set(stamps);
@@ -29,20 +29,20 @@ authRouter.post("/login", async (req, res) => {
       return {
         ...game,
         place_name: placeData.place_name,
-        flag_img_url: placeData.flag_img_url,
-        icon_url: placeData.icon_url,
+        flag_img_url: getPublicUrl('flag/'+placeData.flag_img_url),
+        icon_url: getPublicUrl('stamp/'+placeData.icon_url),
       };
     });
     return res.status(200).json({
-      user_id: user.uid,
-      email: user.email,
+      user_id: userData.id,
+      email: userData.email,
       game_history: gameHistoryWithPlaceData,
       stamps: placesData
         .map((place) => {
           return {
             code_name: place.code_place_name,
             place_name: place.place_name,
-            icon_url: getPublicUrl(place.icon_url),
+            icon_url: getPublicUrl('stamp/'+place.icon_url),
             has_stamp: userSetStamps.has(place.code_place_name),
           };
         })
