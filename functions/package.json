@@ -4,6 +4,7 @@
   "scripts": {
     "lint": "eslint .",
     "serve": "firebase emulators:start --import=./fake-data",
+    "serve_save": "firebase emulators:start --import=./fake-data --export-on-exit",
     "shell": "firebase functions:shell",
     "start": "npm run shell",
     "deploy": "firebase deploy --only functions",

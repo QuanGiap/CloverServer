@@ -1,18 +1,20 @@
 const { storage, admin } = require("../FireBase/FireBase");
 
-
-function getPublicUrl(filePath) {
-    const bucket = storage.bucket();
-    const bucketName = bucket.name; 
-    const encodedPath = encodeURIComponent(filePath);
-  
-    if (process.env.FIREBASE_STORAGE_EMULATOR_HOST) {
-      // Running in emulator
-      const host = process.env.FIREBASE_STORAGE_EMULATOR_HOST; 
-      return `http://${host}/v0/b/${bucketName}/o/${encodedPath}?alt=media`;
-    } else {
-      // Production
-      return `https://storage.googleapis.com/${bucketName}/${filePath}`;
-    }
+/**
+ * Generate a public URL for a file in the storage bucket
+ * @param {string} fileName - The name of the file in the storage bucket
+ * @return {string} - The public URL of the file
+ */
+function getPublicUrl(fileName) {
+  const bucket = storage.bucket();
+  const bucketName = bucket.name;
+  const filePath = encodeURIComponent(fileName);
+  // Check if running in emulator
+  if (process.env.FIREBASE_STORAGE_EMULATOR_HOST) {
+    return `http://${process.env.FIREBASE_STORAGE_EMULATOR_HOST}/v0/b/${bucketName}/o/${filePath}?alt=media`;
   }
+
+  return `https://storage.googleapis.com/${bucketName}/${filePath}`;
+}
+
 module.exports = {getPublicUrl};
