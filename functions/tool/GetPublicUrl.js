@@ -9,12 +9,12 @@ function getPublicUrl(fileName) {
   const bucket = storage.bucket();
   const bucketName = bucket.name;
   const filePath = encodeURIComponent(fileName);
+  const file = bucket.file(fileName);
   // Check if running in emulator
   if (process.env.FIREBASE_STORAGE_EMULATOR_HOST) {
-    return `http://${process.env.FIREBASE_STORAGE_EMULATOR_HOST}/v0/b/${bucketName}/o/${filePath}?alt=media`;
-  }
-
-  return `https://storage.googleapis.com/${bucketName}/${filePath}`;
+      return `http://${process.env.FIREBASE_STORAGE_EMULATOR_HOST}/${bucketName}/${fileName}`;
+    }
+    return file.publicUrl();
 }
 
 module.exports = {getPublicUrl};
