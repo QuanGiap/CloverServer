@@ -3,6 +3,7 @@ const { getGameDataHistoryByUserid } = require("../models/GameData");
 const { getUserByEmail } = require("../models/User");
 const { getPublicUrl } = require("../tool/GetPublicUrl");
 const { getPlaces } = require("../models/Places");
+const ErrRes = require("../tool/ErrRes");
 
 const authRouter = express.Router();
 
@@ -14,7 +15,7 @@ authRouter.post("/login", async (req, res) => {
   try {
     const userData = await getUserByEmail(email);
     if (!userData) {
-      return res.status(404).send("User not found");
+      return ErrRes({res,error:"User not found",statusCode:404,typeError:"USER_NOT_FOUND"});
     }
     const gameHistory = await getGameDataHistoryByUserid(userData.id);
     const placesData = await getPlaces();
@@ -28,6 +29,7 @@ authRouter.post("/login", async (req, res) => {
       const placeData = placeMap[game.code_name];
       return {
         ...game,
+        date: game.date.toDate(),
         place_name: placeData.place_name,
         flag_img_url: getPublicUrl('flag/'+placeData.flag_img_url),
         icon_url: getPublicUrl('stamp/'+placeData.icon_url),

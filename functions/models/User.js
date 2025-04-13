@@ -1,4 +1,5 @@
 const { auth, db, admin } = require("../FireBase/FireBase");
+const { FieldValue } = require ("firebase-admin/firestore");
 // async function getPlayHistory(req, user_id) {}
 
 /**
@@ -9,7 +10,7 @@ const { auth, db, admin } = require("../FireBase/FireBase");
 async function getUserByEmail(email) {
   try {
     const user = await auth.getUserByEmail(email);
-    const userData = await db.collection("user").doc(user.uid).get();
+    const userData = await db.collection("users").doc(user.uid).get();
     return {id:user.uid, ...userData.data()}
   } catch (err) {
     if(err.code === 'auth/user-not-found'){
@@ -31,10 +32,10 @@ async function getUserByEmail(email) {
  */
 async function addStampToUser(userId, stamp) {
   const res = await db
-    .collection("user")
+    .collection("users")
     .doc(userId)
     .update({
-      stamps: admin.firestore.FieldValue.arrayUnion(stamp),
+      stamps: FieldValue.arrayUnion(stamp),
     });
     return res;
 }
@@ -48,7 +49,7 @@ async function createUser(userEmail) {
   const user = await auth.createUser({
     email: userEmail,
   });
-  await db.collection("user").doc(user.uid).set({
+  await db.collection("users").doc(user.uid).set({
     stamps: [],
     email: userEmail,
   });

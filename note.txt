@@ -1,1 +1,1 @@
-Fix url to public image
+Fix url to public image (url working http://127.0.0.1:9199/eshop-3ed25.appspot.com/test.jpg) it using ".appspot.com"

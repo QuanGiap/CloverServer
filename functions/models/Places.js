@@ -5,5 +5,8 @@ async function getPlaces(){
     return placesRef.docs.map(doc=>doc.data());
 }
 
-
-module.exports = { getPlaces };
+async function checkPlaceExists(placeName){
+    const placesRef = await db.collection('places').doc(placeName).get();
+    return placesRef.exists;
+}
+module.exports = { getPlaces,checkPlaceExists };

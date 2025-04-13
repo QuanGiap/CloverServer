@@ -1,4 +1,5 @@
-const {db, admin} = require("../FireBase/FireBase");
+const { Timestamp } = require("firebase-admin/firestore");
+const {db} = require("../FireBase/FireBase");
 
 
 /**
@@ -11,9 +12,8 @@ const {db, admin} = require("../FireBase/FireBase");
 async function getGameHistoryByCode(code) {
   const codeCollection = db.collection("code");
   try {
-    const snapshot = await codeCollection.doc(code).get();
-    if (snapshot.exists) {
-      console.log("No matching documents found.");
+    const snapshot = await codeCollection.doc(`${code}`).get();
+    if (!snapshot.exists) {
       return null;
     }
     const doc = snapshot.data();
@@ -42,7 +42,7 @@ async function addGameDataHistory({
     const docRef = await db.collection("game_history").add({
       user_id: userId,
       code_place_name: codePlaceName,
-      date:admin.firestore.Timestamp.now(),
+      date:Timestamp.now(),
       points,
       time,
     });
@@ -74,7 +74,6 @@ async function getGameDataHistoryByUserid(userId){
     const gameHistoryCollection = db.collection("game_history");
     const snapshot = await gameHistoryCollection.where("user_id", "==", userId).get();
     if (snapshot.empty) {
-      console.log("No matching documents found.");
       return [];
     }
     const gameHistory = snapshot.docs.map(doc => ({
@@ -91,13 +90,12 @@ async function getGameDataHistoryByUserid(userId){
 async function getGameDataHistoryById(id){
   const gameHistoryDoc = await db.collection("game_history").doc(id).get();
   if(!gameHistoryDoc.exists) {
-    console.log("No matching documents found.");
     return null;
   }
   const {code_place_name,date,points,time} = gameHistoryDoc.data();
   return {
     id: gameHistoryDoc.id,
-    codePlaceName: code_place_name,
+    code_place_name,
     date:date,
     points,
     time,

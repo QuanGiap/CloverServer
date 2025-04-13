@@ -1,11 +1,10 @@
-const {initializeApp} = require("firebase-admin/app");
 const {getAuth} = require("firebase-admin/auth");
 const {getFirestore} = require("firebase-admin/firestore");
 const {getStorage} = require("firebase-admin/storage");
 const admin = require("firebase-admin");
 
 // Initialize Firebase Admin SDK with credentials (only for real deployment)
-const app = initializeApp();
+const app = admin.initializeApp();
 
 const db =  getFirestore();
 const storage = getStorage();

@@ -1,3 +1,4 @@
+const { getDownloadURL } = require("firebase-admin/storage");
 const { storage, admin } = require("../FireBase/FireBase");
 
 /**
@@ -7,14 +8,16 @@ const { storage, admin } = require("../FireBase/FireBase");
  */
 function getPublicUrl(fileName) {
   const bucket = storage.bucket();
-  const bucketName = bucket.name;
+  let bucketName = bucket.name;
+  if (process.env.FIREBASE_STORAGE_EMULATOR_HOST) {
+    bucketName = bucketName.replace('.firebasestorage.app', '.appspot.com'); // Fix bucket name only in emulator
+  }
   const filePath = encodeURIComponent(fileName);
-  const file = bucket.file(fileName);
   // Check if running in emulator
   if (process.env.FIREBASE_STORAGE_EMULATOR_HOST) {
-      return `http://${process.env.FIREBASE_STORAGE_EMULATOR_HOST}/${bucketName}/${fileName}`;
+      return `http://${process.env.FIREBASE_STORAGE_EMULATOR_HOST}/${bucketName}/${filePath}`;
     }
-    return file.publicUrl();
+    return `https://storage.googleapis.com/${bucketName}/${filePath}`;
 }
 
 module.exports = {getPublicUrl};

@@ -7,12 +7,13 @@
  * @param {number} [params.statusCode=400] - The HTTP status code.
  * @return {Object} The response object with the error details.
  */
-function ErrRes({res, error, errors, statusCode = 400}) {
+function ErrRes({res, error, errors, statusCode = 400,typeError}) {
   const errorsCur = errors ? errors : [error];
   return res
       .json({
         error: error,
         errors: errorsCur,
+        type_error: typeError,
       })
       .status(statusCode);
 }

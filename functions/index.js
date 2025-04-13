@@ -5,6 +5,7 @@ const authRouter = require("./routes/Auth");
 const placesRouter = require("./routes/Places");
 const dataRouter = require("./routes/Data");
 const { storage } = require("./FireBase/FireBase");
+const { getPublicUrl } = require("./tool/GetPublicUrl");
 
 const app = express();
 app.use(cors({
@@ -21,7 +22,7 @@ app.get("/", (req, res) => {
 });
 app.get("/test", (req, res) => {
   const file = storage.bucket().file('flag/china.png');
-  res.json({url:file.publicUrl()})
+  res.json({url:getPublicUrl('test.jpg')})
 });
 app.use("/auth", authRouter);
 app.use("/places", placesRouter);

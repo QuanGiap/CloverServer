@@ -8,9 +8,8 @@ const {db} = require("../FireBase/FireBase");
 async function checkCodeDublicate(code) {
   const codeCollection = db.collection("code");
   try {
-    const snapshot = await codeCollection.doc(code).get();
+    const snapshot = await codeCollection.doc(`${code}`).get();
     if (snapshot.exists) {
-      console.log("Duplicate code exists.");
       return true;
     }
     return false;
@@ -32,7 +31,7 @@ async function createCode(code, gameHistoryId) {
   const codeCollection = db.collection("code");
   try {
     // Add new document
-    await codeCollection.doc(code).set({
+    await codeCollection.doc(`${code}`).set({
       code,
       game_history_id: gameHistoryId,
     });
@@ -53,8 +52,7 @@ async function createCode(code, gameHistoryId) {
 async function deleteCode(code) {
   const codeCollection = db.collection("code");
   try {
-    await codeCollection.doc(code).delete();
-    console.log(`Code deleted successfully.`);
+    await codeCollection.doc(`${code}`).delete();
     return true;
   } catch (error) {
     console.error(`Error deleting code with ID ${code}:`, error);
