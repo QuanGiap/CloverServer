@@ -2,7 +2,10 @@ const { db } = require("../FireBase/FireBase");
 
 async function getPlaces(){
     const placesRef = await db.collection('places').get();
-    return placesRef.docs.map(doc=>doc.data());
+    return placesRef.docs.map(doc=>({
+        id:doc.id,
+        ...doc.data(),
+    }));
 }
 
 async function checkPlaceExists(placeName){

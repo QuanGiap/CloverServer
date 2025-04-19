@@ -13,7 +13,7 @@ dataRouter.post("/", async (req, res) => {
   const { code, user_id = "", points, time, code_place_name } = req.body;
   const errors = [];
   let typeError = "";
-  if (!code) {
+  if (!code && !user_id) {
     errors.push("code is required");
   }
   if (code_place_name === "" || !code_place_name) {
@@ -49,7 +49,7 @@ dataRouter.post("/", async (req, res) => {
     time: time,
   });
 
-  await createCode(code,gameDataId);
+  if(code) await createCode(code,gameDataId);
   return res.status(200).json({
     message: "Game data added successfully",
     gameDataId,

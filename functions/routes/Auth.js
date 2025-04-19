@@ -31,6 +31,7 @@ authRouter.post("/login", async (req, res) => {
         ...game,
         date: game.date.toDate(),
         place_name: placeData.place_name,
+        address: placeData.address,
         flag_img_url: getPublicUrl('flag/'+placeData.flag_img_url),
         icon_url: getPublicUrl('stamp/'+placeData.icon_url),
       };
@@ -42,6 +43,7 @@ authRouter.post("/login", async (req, res) => {
       stamps: placesData
         .map((place) => {
           return {
+            place_id: place.id,
             code_name: place.code_place_name,
             place_name: place.place_name,
             icon_url: getPublicUrl('stamp/'+place.icon_url),
