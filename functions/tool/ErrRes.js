@@ -1,5 +1,5 @@
 /**
- * Sends an error response with the provided details.
+ * Sends an error response with the provided details
  * @param {Object} params - The parameters for the error response.
  * @param {Object} params.res - The response object.
  * @param {string} params.error - The main error message.
