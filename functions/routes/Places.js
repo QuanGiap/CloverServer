@@ -10,4 +10,10 @@ placesRouter.get("/", async (req, res) => {
     });
 })
 
+placesRouter.post("/", async (req, res) => {
+    return res.status(400).json({
+        message: "This endpoint is not available",
+    });
+})
+
 module.exports = placesRouter;
