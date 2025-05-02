@@ -6,7 +6,19 @@ const { getPlaces } = require("../models/Places");
 const ErrRes = require("../tool/ErrRes");
 
 const authRouter = express.Router();
-
+authRouter.get("/",async (req,res)=>{
+  const email = decodeURIComponent(req.query.email);
+  console.log(email)
+  const user = await getUserByEmail(email);
+  if(!user){
+    return res.status(404).json({
+      message:"User not found",
+    });
+  }
+  return res.status(200).json({
+    message:"User found",
+  });
+})
 authRouter.post("/login", async (req, res) => {
   const { email } = req.body;
   if (!email) {
@@ -20,6 +32,7 @@ authRouter.post("/login", async (req, res) => {
     const gameHistory = await getGameDataHistoryByUserid(userData.id);
     const placesData = await getPlaces();
     const stamps = userData.stamps;
+    // console.log(stamps)
     const userSetStamps = new Set(stamps);
     const placeMap = {};
     placesData.forEach((place) => {
@@ -47,7 +60,7 @@ authRouter.post("/login", async (req, res) => {
             code_name: place.code_place_name,
             place_name: place.place_name,
             icon_url: getPublicUrl('stamp/'+place.icon_url),
-            has_stamp: userSetStamps.has(place.code_place_name),
+            has_stamp: userSetStamps.has(place.id),
           };
         })
         .sort(sortStamps),

@@ -7,7 +7,7 @@ const { FieldValue } = require ("firebase-admin/firestore");
  * @param {string} email
  * @return {object|null} userData
  */
-async function getUserByEmail(email) {
+async function getUserByEmail(email="") {
   try {
     const user = await auth.getUserByEmail(email);
     const userData = await db.collection("users").doc(user.uid).get();
@@ -39,6 +39,8 @@ async function addStampToUser(userId, stamp) {
     });
     return res;
 }
+
+
 
 /**
  * Create new user
