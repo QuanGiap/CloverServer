@@ -17,7 +17,7 @@ function getPublicUrl(fileName) {
   if (process.env.FIREBASE_STORAGE_EMULATOR_HOST) {
       return `http://${process.env.FIREBASE_STORAGE_EMULATOR_HOST}/${bucketName}/${filePath}`;
     }
-    return `https://storage.googleapis.com/${bucketName}/${filePath}`;
+  return `https://storage.googleapis.com/${bucketName}/${filePath}`;
 }
 
 module.exports = {getPublicUrl};
