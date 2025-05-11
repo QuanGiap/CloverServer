@@ -16,7 +16,7 @@ app.use(cors({
 
 app.use(express.json());
 // app.use(express.static('public'))
-
+app.use(express.raw({ type: "multipart/form-data", limit: "10mb" }));
 app.get("/", (req, res) => {
   res.send("Hello from Firebase Functions with Express!");
 });
