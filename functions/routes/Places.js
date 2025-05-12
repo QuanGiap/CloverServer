@@ -1,35 +1,62 @@
 const express = require("express");
 const { getPlaces } = require("../models/Places");
 const placesRouter = express.Router();
-const fileUpload = require("express-fileupload");
-
+const fileParser = require("express-multipart-file-parser");
+const Busboy = require("busboy");
+const os = require("os");
+const path = require("path");
+const fs = require("fs");
 placesRouter.get("/", async (req, res) => {
-    const places = await getPlaces();
-    return res.status(200).json({
-        message: "Places fetched successfully",
-        places,
-    });
-})
-
-// Only apply `express-fileupload` to the /upload route
-placesRouter.post("/", fileUpload(), async (req, res) => {
-    try {
-      if (!req.files || !req.files.file) {
-        return res.status(400).send("No file uploaded.");
-      }
-  
-      const uploadedFile = req.files.file;
-     
-      res.status(200).json({
-        message: "File uploaded successfully",
-        fileName: uploadedFile.name,
-        fileSize: uploadedFile.size,
-        mimeType: uploadedFile.mimetype,
-      });
-    } catch (err) {
-      console.error("Upload error:", err);
-      res.status(500).send("Upload failed.");
-    }
+  const places = await getPlaces();
+  return res.status(200).json({
+    message: "Places fetched successfully",
+    places,
   });
-  
+});
+
+placesRouter.post("/", async (req, res) => {
+  try {
+    const busboy = Busboy({ headers: req.headers });
+
+    const uploadedFiles = [];
+
+    busboy.on("file", (fieldname, file, {filename, mimeType}) => {
+      console.log(mimeType)
+      if (!filename || typeof filename !== "string") {
+        return file.resume(); // Skip invalid file
+      }
+      // const filepath = path.join(os.tmpdir(), filename); // ✅ safe usage
+      // const writeStream = fs.createWriteStream(filepath);
+
+      let fileSize = 0;
+      file.on("data", (data) => {
+        fileSize += data.length;
+      });
+
+      file.on("end", () => {
+        uploadedFiles.push({
+          field: fieldname,
+          filename,
+          size: fileSize,
+        });
+      });
+
+      // file.pipe(writeStream);
+    });
+
+    busboy.on("finish", () => {
+      res.status(200).json({
+        message: "Files uploaded successfully!",
+        files: uploadedFiles,
+      });
+    });
+
+    // Firebase provides the entire body as raw buffer
+    busboy.end(req.rawBody);
+  } catch (err) {
+    console.error("Upload error:", err);
+    res.status(500).send("Upload failed.");
+  }
+});
+
 module.exports = placesRouter;
