@@ -6,6 +6,7 @@ const Busboy = require("busboy");
 const os = require("os");
 const path = require("path");
 const fs = require("fs");
+const handleFileUpload = require("../tool/HandleFileUpload");
 placesRouter.get("/", async (req, res) => {
   const places = await getPlaces();
   return res.status(200).json({
@@ -15,48 +16,8 @@ placesRouter.get("/", async (req, res) => {
 });
 
 placesRouter.post("/", async (req, res) => {
-  try {
-    const busboy = Busboy({ headers: req.headers });
+  const {json,flag,stamp} = await handleFileUpload(req);
 
-    const uploadedFiles = [];
-
-    busboy.on("file", (fieldname, file, {filename, mimeType}) => {
-      console.log(mimeType)
-      if (!filename || typeof filename !== "string") {
-        return file.resume(); // Skip invalid file
-      }
-      // const filepath = path.join(os.tmpdir(), filename); // ✅ safe usage
-      // const writeStream = fs.createWriteStream(filepath);
-
-      let fileSize = 0;
-      file.on("data", (data) => {
-        fileSize += data.length;
-      });
-
-      file.on("end", () => {
-        uploadedFiles.push({
-          field: fieldname,
-          filename,
-          size: fileSize,
-        });
-      });
-
-      // file.pipe(writeStream);
-    });
-
-    busboy.on("finish", () => {
-      res.status(200).json({
-        message: "Files uploaded successfully!",
-        files: uploadedFiles,
-      });
-    });
-
-    // Firebase provides the entire body as raw buffer
-    busboy.end(req.rawBody);
-  } catch (err) {
-    console.error("Upload error:", err);
-    res.status(500).send("Upload failed.");
-  }
 });
 
 module.exports = placesRouter;
