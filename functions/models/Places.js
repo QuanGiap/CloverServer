@@ -40,7 +40,7 @@ async function uploadPlaces({stamp,flag,body}){
         code_name,
         flag_img_url:flag_img_name,
         icon_url:stamp_img_name,
-        place_name:place_name,
+        place_name,
     };
 }
 
