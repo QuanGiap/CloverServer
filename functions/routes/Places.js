@@ -10,13 +10,13 @@ placesRouter.get("/", async (req, res) => {
   });
 });
 
-placesRouter.post("/", async (req, res) => {
-  const {json,flag,stamp} = await handleFileUpload(req);
-  const place = await uploadPlaces({stamp,flag,body:json});
-  return res.status(200).json({
-    message: "Places uploaded successfully",
-    place,
-  })
-});
+// placesRouter.post("/", async (req, res) => {
+//   const {json,flag,stamp} = await handleFileUpload(req);
+//   const place = await uploadPlaces({stamp,flag,body:json});
+//   return res.status(200).json({
+//     message: "Places uploaded successfully",
+//     place,
+//   })
+// });
 
 module.exports = placesRouter;
