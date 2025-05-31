@@ -9,9 +9,9 @@ const { storage, admin } = require("../FireBase/FireBase");
 function getPublicUrl(fileName) {
   const bucket = storage.bucket();
   let bucketName = bucket.name;
-  if (process.env.FIREBASE_STORAGE_EMULATOR_HOST) {
-    bucketName = bucketName.replace('.firebasestorage.app', '.appspot.com'); // Fix bucket name only in emulator
-  }
+  // if (process.env.FIREBASE_STORAGE_EMULATOR_HOST) {
+  //   bucketName = bucketName.replace('.firebasestorage.app', '.appspot.com'); // Fix bucket name only in emulator
+  // }
   const filePath = encodeURIComponent(fileName);
   // Check if running in emulator
   if (process.env.FIREBASE_STORAGE_EMULATOR_HOST) {
