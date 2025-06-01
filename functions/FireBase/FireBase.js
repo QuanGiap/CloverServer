@@ -20,7 +20,7 @@ if (process.env.FIREBASE_AUTH_EMULATOR_HOST) {
 }
 
 if (process.env.FIREBASE_STORAGE_EMULATOR_HOST) {
-  console.log("Using Storage Emulator, adding files");
+  console.log("Using Storage Emulator");
 }
 
 module.exports = {db, storage, app, auth,admin};
