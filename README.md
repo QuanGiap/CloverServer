@@ -2,7 +2,7 @@
 
 ## Requirements
 
-* **Node.js**: v18 or higher
+* **Node.js**: v22 
 * **Java**: Make sure Java is installed and added to your system’s `PATH`.
 
 
